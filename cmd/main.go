@@ -104,7 +104,7 @@ func main() {
 	// 服务发现
 	rd := consulUtil.NewDiscovery()
 
-	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Passport, rr, rd, logger)
+	app, cleanup, err := wireApp(bc.Server, bc.Passport, rr, rd, logger)
 	if err != nil {
 		panic(err)
 	}
