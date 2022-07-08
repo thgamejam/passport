@@ -1,14 +1,12 @@
 syntax = "proto3";
-package passport.conf;
+package thjam.passport.conf;
 
 option go_package = "app/passport/internal/conf;conf";
 
+import "google/protobuf/duration.proto";
 import "consul.proto";
 import "http.proto";
 import "grpc.proto";
-import "database.proto";
-import "redis.proto";
-import "queue.proto";
 
 message CloudBootstrap {
   pkg.conf.Consul consul = 1;
@@ -16,8 +14,7 @@ message CloudBootstrap {
 
 message Bootstrap {
   Server server = 1;
-  Data data = 2;
-  Passport passport = 3;
+  Passport passport = 2;
 }
 
 message Server {
@@ -25,12 +22,11 @@ message Server {
   pkg.conf.GRPC grpc = 2;
 }
 
-message Data {
-  pkg.conf.Database database = 1;
-  pkg.conf.Redis redis = 2;
-  pkg.conf.Queue email_mq = 3;
-}
-
 message Passport {
-  string value = 1;
+  // token加密
+  string verify_email_key = 1;
+  // 登录过期时间
+  google.protobuf.Duration login_expire_time = 2;
+  // 续签时间
+  google.protobuf.Duration renewal_time =3;
 }
