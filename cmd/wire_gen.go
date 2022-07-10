@@ -30,7 +30,7 @@ func wireApp(confServer *conf.Server, passport *conf.Passport, registrar registr
 	passportRepo := data.NewPassportRepo(dataData, logger)
 	passportUseCase := biz.NewPassportUseCase(passportRepo, logger)
 	passportService := service.NewPassportService(passportUseCase)
-	httpServer := server.NewHTTPServer(confServer, passportService, logger)
+	httpServer := server.NewHTTPServer(confServer, passport, passportService, logger)
 	grpcServer := server.NewGRPCServer(confServer, passportService, logger)
 	app := newApp(logger, registrar, httpServer, grpcServer)
 	return app, func() {
