@@ -10,6 +10,7 @@ import (
 	nghttp "net/http"
 	"passport/internal/conf"
 	"passport/internal/service"
+	v1 "passport/proto/api/passport/v1"
 	"strings"
 	// v1 "passport/proto/api/passport/v1"
 )
@@ -49,6 +50,6 @@ func NewHTTPServer(c *conf.Server, t *conf.Passport, service *service.PassportSe
 		opts = append(opts, http.Timeout(c.Http.Timeout.AsDuration()))
 	}
 	srv := http.NewServer(opts...)
-	// v1.RegisterPassportHTTPServer(srv, service)
+	v1.RegisterPassportHTTPServer(srv, service)
 	return srv
 }
