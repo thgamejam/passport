@@ -13,26 +13,35 @@ import (
 	"time"
 )
 
-// CreateUserByAccountID 通过账户ID创建用户
-func (r *passportRepo) CreateUserByAccountID(ctx context.Context, id uint32) (ok bool, err error) {
-	_, err = r.data.userClient.CreateUser(ctx, &userV1.CreateUserRequest{AccountID: id})
+// GetAccountByID 通过ID获取账号信息
+func (r *passportRepo) GetAccountByID(ctx context.Context, id uint32) (accountInfo *accountV1.GetAccountReply, err error) {
+	accountInfo, err = r.data.accountClient.GetAccount(ctx, &accountV1.GetAccountReq{Id: id})
 	if err != nil {
-		return false, err
+		return nil, err
 	}
-	return true, nil
+	return
+}
+
+// CreateUserByAccountID 通过账户ID创建用户
+func (r *passportRepo) CreateUserByAccountID(ctx context.Context, id uint32) (u *userV1.UserInfo, err error) {
+	u, err = r.data.userClient.CreateUser(ctx, &userV1.CreateUserRequest{AccountId: id})
+	if err != nil {
+		return nil, err
+	}
+	return u, nil
 }
 
 // GetUserByAccountID 通过账户ID获取账户
-func (r *passportRepo) GetUserByAccountID(ctx context.Context, id uint32) (ok bool, err error) {
-	_, err = r.data.userClient.GetUserByAccountID(ctx, &userV1.GetUserByAccountIDRequest{AccountID: id})
+func (r *passportRepo) GetUserByAccountID(ctx context.Context, id uint32) (user *userV1.UserInfo, err error) {
+	user, err = r.data.userClient.GetUserInfoByAccountID(ctx, &userV1.GetUserInfoByAccountIDRequest{AccountId: id})
 	if err != nil {
 		// 若错误信息为用户未找到则不返回错误
 		if userV1.IsUserNotFoundByAccount(err) {
-			return false, nil
+			return nil, nil
 		}
-		return false, err
+		return nil, err
 	}
-	return true, nil
+	return
 }
 
 // AccountLogout 注销会话号ID
@@ -160,7 +169,7 @@ func (r *passportRepo) GetPublicKey(ctx context.Context) (key string, hash strin
 	return rep.Key, rep.Hash, nil
 }
 
-// CreatAccount 创建用户
+// CreatAccount 创建账户
 func (r *passportRepo) CreatAccount(ctx context.Context, sid string, key string) (uint32, error) {
 	sidMd5 := md5.Sum([]byte(sid + r.data.conf.VerifyEmailKey))
 	keyHash := hex.EncodeToString(sidMd5[:])
